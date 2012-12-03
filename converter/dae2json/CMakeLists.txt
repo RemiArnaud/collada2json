@@ -1,6 +1,15 @@
 cmake_minimum_required(VERSION 2.6)
 project(COLLADA2JSON)
 
+if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+	MESSAGE(STATUS "compiling for Linux")
+	add_definitions(-fPIC)
+	add_definitions(-DPCRE_STATIC)
+	set(PCRE_INCLUDE_DIR "${COLLADA2JSON_SOURCE_DIR}/dependencies/pcre/include")
+	set(PCRE_PCRE_LIBRARY "${COLLADA2JSON_SOURCE_DIR}/dependencies/pcre/lib/libpcre.a")
+	set(PCRE_PCREPOSIX_LIBRARY "${COLLADA2JSON_SOURCE_DIR}/dependencies/pcre/lib/libpcreposix.a")
+endif()
+
 set(WITH_IN_SOURCE_BUILD "ON")
 set(COLLADA2JSON_BINARY_DIR, COLLADA2JSON_SOURCE_DIR)
 
@@ -55,4 +64,8 @@ add_executable(collada2json main.cpp
     helpers/geometryHelpers.h
     helpers/geometryHelpers.cpp)
 
-target_link_libraries (collada2json GeneratedSaxParser_static OpenCOLLADABaseUtils_static UTF_static ftoa_static MathMLSolver_static OpenCOLLADASaxFrameworkLoader_static OpenCOLLADAFramework_static buffer_static $(LIBXML2_LIBRARIES))
+if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+target_link_libraries (collada2json GeneratedSaxParser_static OpenCOLLADABaseUtils_static UTF_static ftoa_static MathMLSolver_static OpenCOLLADASaxFrameworkLoader_static OpenCOLLADAFramework_static buffer_static /usr/lib/x86_64-linux-gnu/libxml2.a)
+else()
+	target_link_libraries (collada2json GeneratedSaxParser_static OpenCOLLADABaseUtils_static UTF_static ftoa_static MathMLSolver_static OpenCOLLADASaxFrameworkLoader_static OpenCOLLADAFramework_static buffer_static $(LIBXML2_LIBRARIES))
+endif()
